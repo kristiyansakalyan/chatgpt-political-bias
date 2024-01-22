@@ -1,11 +1,5 @@
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
-from dotenv import load_dotenv
-
-# You need to create a .env file and add the openai api key there like:
-# OPENAI_API_KEY=<your-key>
-load_dotenv()
 
 SYSTEM_PROMPT = """
 <s>[INST] <<SYS>>
