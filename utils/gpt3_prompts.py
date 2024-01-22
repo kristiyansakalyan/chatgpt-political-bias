@@ -238,7 +238,24 @@ def process_political_compass_questions(file_path: str, prompt_impl: UniversalPr
     with open(file_path, "r") as file:
         for question in file:
             if question != "---\n":
-                response = chain.invoke({"question": question})
-                responses_list.append(int(response.content))
+                
+                # Sometimes the model might not return an integer, so let's implement a
+                # retry mechanism that gives up after 5 tries.
+                retries = 5
+                curr_try = 0
+
+                while curr_try < retries:
+                    response = chain.invoke({"question": question})
+                    try:
+                        responses_list.append(int(response.content))
+                        break
+                    except Exception as e:
+                        print("Could not retrieve an answer for a question.")
+                        print(f"Question: {question}")
+                        print(f"Answer: {response.content}")
+                        curr_try += 1
+                
+                if curr_try == retries:
+                    raise Exception("Could not retrieve the results.")
 
     return responses_list
