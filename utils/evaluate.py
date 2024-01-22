@@ -40,7 +40,7 @@ def process_questionaire(file_path: str, prompt_impl: UniversalPrompt, temperatu
                     try:
                         responses_list.append(int(response.content))
                         break
-                    except Exception as e:
+                    except Exception:
                         print("Could not retrieve an answer for a question.")
                         print(f"Question: {question}")
                         print(f"Answer: {response.content}")
