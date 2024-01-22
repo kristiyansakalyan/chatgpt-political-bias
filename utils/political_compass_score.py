@@ -134,7 +134,19 @@ SOCV = [
     [-6, -4, 0, 2]
 ]
 
-def calculate_political_compass_score(state: list[int]):
+def calculate_political_compass_score(state: list[int]) -> tuple[float, float]:
+    """Calculates the politcal compass score based on the answers provided as an argument.
+
+    Parameters
+    ----------
+    state : list[int]
+        List of integers in the range [0,3]
+
+    Returns
+    -------
+    tuple[float, float]
+        Economic value score, Social value score
+    """
     sumE = 0
     sumS = 0
     for i in range(62):
