@@ -2,7 +2,7 @@ from utils.gpt3_prompts import UniversalPrompt
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 
-def process_questionaire(file_path: str, prompt_impl: UniversalPrompt, temperature: int = 0.1) -> list[int]:
+def process_questionaire(file_path: str, prompt_impl: UniversalPrompt, temperature: float = 0.1, response_option_count: int = 4) -> list[int]:
     """Processes the politcal compass questions in all supported languages.
 
     Parameters
@@ -20,7 +20,7 @@ def process_questionaire(file_path: str, prompt_impl: UniversalPrompt, temperatu
         A list containing the answers of the model.
     """
     # Define the chain
-    prompt = ChatPromptTemplate.from_template(prompt_impl.prompt)
+    prompt = ChatPromptTemplate.from_template(prompt_impl(response_option_count=response_option_count).prompt)
     model = ChatOpenAI(temperature=temperature)
     chain = prompt | model
 
