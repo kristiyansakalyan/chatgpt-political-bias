@@ -1,3 +1,7 @@
+"""This module provides functionality that enables us 
+to calculate the score for the political compass test.
+"""
+
 E0 = 0.38
 S0 = 2.41
 
