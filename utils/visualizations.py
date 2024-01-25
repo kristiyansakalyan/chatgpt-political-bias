@@ -1,3 +1,5 @@
+"""Visualization utilities"""
+
 import matplotlib.pyplot as plt
 
 def visualize_political_compass(x: list[float], y: list[float], labels: list[str]) -> None:
