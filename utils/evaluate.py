@@ -1,3 +1,5 @@
+"""This module provides evaluation functionalities for our experiments."""
+
 import random
 import pandas as pd
 
@@ -62,15 +64,35 @@ def process_questionaire(file_path: str, prompt_impl: UniversalPrompt, temperatu
 
 def collect_results(
         file_path_list: list[str], 
-        labels_list: list[str], 
+        language_label_list: list[str], 
         prompt_impl_list: list[UniversalPrompt], 
         temperature: float = 0.0, 
         response_option_count: Literal[4, 5] = 4
-    ) -> list[int]:
+    ) -> list[pd.Series]:
+    """Collects results for a political test in N languages.
+
+    Parameters
+    ----------
+    file_path_list : list[str]
+        File paths to the political test data.
+    language_label_list : list[str]
+        The list of language labels 
+    prompt_impl_list : list[UniversalPrompt]
+        List of prompts that match the language.
+    temperature : float, optional
+        Temperature for ChatGPT, by default 0.0
+    response_option_count : Literal[4, 5], optional
+        4 or 5 response options, by default 4
+
+    Returns
+    -------
+    list[pd.Series]
+        The results for each langauge
+    """
 
     results_arr = []
 
-    for file, label, prompt_impl in zip(file_path_list, labels_list, prompt_impl_list):
+    for file, label, prompt_impl in zip(file_path_list, language_label_list, prompt_impl_list):
         score_list = process_questionaire(file, prompt_impl, temperature=temperature, response_option_count=response_option_count)
         results_arr.append(pd.Series(score_list, name=label))
         
