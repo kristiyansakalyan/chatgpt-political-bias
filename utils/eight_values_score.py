@@ -1,3 +1,9 @@
+"""
+This moduel provides functionality for calculating the scores for the 8 values political test.
+The code was rewritten and adapted in Python. Original code can be found in:
+https://github.com/8values/8values.github.io/tree/master
+"""
+
 questions = [
     {
         "question": "Abortion should be prohibited in most or all cases.",
