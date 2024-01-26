@@ -1,5 +1,8 @@
 """This module provides functionality that enables us 
 to calculate the score for the political compass test.
+
+The code was rewritten and adapted in Python. Original code can be found in:
+https://github.com/kmturley/political-compass/tree/master
 """
 
 E0 = 0.38
