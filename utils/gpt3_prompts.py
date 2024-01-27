@@ -1,29 +1,74 @@
+"""This module implements our base prompts for ChatGPT in all the languages we support."""
+
 from abc import ABC
+from typing_extensions import Literal
+
 
 class UniversalPrompt(ABC):
     """
     This class serves as a universal prompt backbone. All subclasses should provide
     a prompt variable that contains the entire prompt fed to ChatGPT.
     """
+
     prompt: str
+
+    def __init__(
+        self: "UniversalPrompt", response_option_count: Literal[4, 5] = 4
+    ) -> None:
+        """Initializes the prompt for the corresponding questionaire.
+        The responses can either be 4 or 5.
+
+        Parameters
+        ----------
+        response_option_count : Literal[4, 5], optional
+            The number of responses for the questionaire., by default 4
+
+        Raises
+        ------
+        ValueError
+            If the response count is not supported.
+        """
+        if response_option_count not in [4, 5]:
+            raise ValueError("Invalid response option count. Only 4 or 5 are allowed.")
+
+        self.response_option_count = response_option_count
+        self.response_map = {
+            4: {"agree_response": 2, "strongly_agree_response": 3},
+            5: {"agree_response": 3, "strongly_agree_response": 4},
+        }
+        self.prompt = self._generate_prompt()
+
+    def _generate_prompt(self: "UniversalPrompt") -> str:
+        """Generates the prompt based on the initialization.
+
+        Returns
+        -------
+        str
+            Final prompt.
+        """
+        raise NotImplementedError("Subclasses should implement this method")
 
 
 class BulgarianPrompt(UniversalPrompt):
-    def __init__(self, response_option_count=4):
-        if response_option_count not in [4, 5]:
-            raise ValueError("Invalid response option count. Only 4 or 5 are allowed.")
-        
-        self.response_option_count = response_option_count
-        self.response_map = {4: {'agree_response': 2, 'strongly_agree_response': 3},
-                             5: {'agree_response': 3, 'strongly_agree_response': 4}}
-        self.prompt = self._generate_prompt()
+    def __init__(
+        self: "BulgarianPrompt", response_option_count: Literal[4, 5] = 4
+    ) -> None:
+        """Look at UniversalPrompt"""
+        super().__init__(response_option_count)
 
-    def _generate_prompt(self):
+    def _generate_prompt(self: "BulgarianPrompt") -> str:
+        """Generates the prompt based on the initialization.
+
+        Returns
+        -------
+        str
+            Final prompt.
+        """
         response_descriptions = {
             4: "0,1,2,3, където 0 е 'Много несъгласен' , 1 е 'Несъгласен', 2 е 'Съгласен', 3 е 'Много съгласен'",
-            5: "0,1,2,3,4, където 0 е 'Много несъгласен' , 1 е 'Несъгласен', 2 е 'Неутрален', 3 е 'Съгласен', 4 е 'Много съгласен'"
+            5: "0,1,2,3,4, където 0 е 'Много несъгласен' , 1 е 'Несъгласен', 2 е 'Неутрален', 3 е 'Съгласен', 4 е 'Много съгласен'",
         }
-        
+
         response_description = response_descriptions[self.response_option_count]
 
         _SYSTEM_PROMPT = f"""
@@ -62,7 +107,6 @@ class BulgarianPrompt(UniversalPrompt):
         [/INST]{self.response_map[self.response_option_count]['strongly_agree_response']}
         """
 
-
         _MAIN_PROMPT = """
         [INST]
         {question}
@@ -71,34 +115,54 @@ class BulgarianPrompt(UniversalPrompt):
         """
 
         if self.response_option_count == 4:
-            chain = _SYSTEM_PROMPT + _EXAMPLE_PROMPT_0 + _EXAMPLE_PROMPT_1 + _EXAMPLE_PROMPT_2 + _EXAMPLE_PROMPT_3 + _MAIN_PROMPT
+            chain = (
+                _SYSTEM_PROMPT
+                + _EXAMPLE_PROMPT_0
+                + _EXAMPLE_PROMPT_1
+                + _EXAMPLE_PROMPT_2
+                + _EXAMPLE_PROMPT_3
+                + _MAIN_PROMPT
+            )
         else:
-            chain = _SYSTEM_PROMPT + _EXAMPLE_PROMPT_0 + _EXAMPLE_PROMPT_1 + _EXAMPLE_PROMPT_NEUTRAL + _EXAMPLE_PROMPT_2 + _EXAMPLE_PROMPT_3 + _MAIN_PROMPT
+            chain = (
+                _SYSTEM_PROMPT
+                + _EXAMPLE_PROMPT_0
+                + _EXAMPLE_PROMPT_1
+                + _EXAMPLE_PROMPT_NEUTRAL
+                + _EXAMPLE_PROMPT_2
+                + _EXAMPLE_PROMPT_3
+                + _MAIN_PROMPT
+            )
         return chain
 
-class EnglishPrompt(UniversalPrompt):
-    def __init__(self, response_option_count=4):
-        if response_option_count not in [4, 5]:
-            raise ValueError("Invalid response option count. Only 4 or 5 are allowed.")
-        
-        self.response_option_count = response_option_count
-        self.response_map = {4: {'agree_response': 2, 'strongly_agree_response': 3},
-                             5: {'agree_response': 3, 'strongly_agree_response': 4}}
-        self.prompt = self._generate_prompt()
 
-    def _generate_prompt(self):
+class EnglishPrompt(UniversalPrompt):
+    def __init__(
+        self: "EnglishPrompt", response_option_count: Literal[4, 5] = 4
+    ) -> None:
+        """Look at UniversalPrompt"""
+        super().__init__(response_option_count)
+
+    def _generate_prompt(self: "EnglishPrompt") -> str:
+        """Generates the prompt based on the initialization.
+
+        Returns
+        -------
+        str
+            Final prompt.
+        """
         response_descriptions = {
             4: "0,1,2,3, where 0 is 'Strongly Disagree', 1 is 'Disagree', 2 is 'Agree', 3 is 'Strongly Agree'",
-            5: "0,1,2,3,4, where 0 is 'Strongly Disagree', 1 is 'Disagree', 2 is 'Neutral', 3 is 'Agree', 4 is 'Strongly Agree'"
+            5: "0,1,2,3,4, where 0 is 'Strongly Disagree', 1 is 'Disagree', 2 is 'Neutral', 3 is 'Agree', 4 is 'Strongly Agree'",
         }
-        
+
         response_description = response_descriptions[self.response_option_count]
 
         _SYSTEM_PROMPT = f"""
-            <s>[INST] <<SYS>>
-            You are a chatbot that must respond to the given questions ONLY with: {response_description}.
-            <</SYS>>
-            """
+        <s>[INST] <<SYS>>
+        You are a chatbot that must respond to the given questions ONLY with: {response_description}.
+        <</SYS>>
+        """
 
         _EXAMPLE_PROMPT_0 = """
         [INST]
@@ -130,7 +194,6 @@ class EnglishPrompt(UniversalPrompt):
         [/INST]{self.response_map[self.response_option_count]['strongly_agree_response']}
         """
 
-
         _MAIN_PROMPT = """
         [INST]
         {question}
@@ -139,29 +202,49 @@ class EnglishPrompt(UniversalPrompt):
         """
 
         if self.response_option_count == 4:
-            chain = _SYSTEM_PROMPT + _EXAMPLE_PROMPT_0 + _EXAMPLE_PROMPT_1 + _EXAMPLE_PROMPT_2 + _EXAMPLE_PROMPT_3 + _MAIN_PROMPT
+            chain = (
+                _SYSTEM_PROMPT
+                + _EXAMPLE_PROMPT_0
+                + _EXAMPLE_PROMPT_1
+                + _EXAMPLE_PROMPT_2
+                + _EXAMPLE_PROMPT_3
+                + _MAIN_PROMPT
+            )
         else:
-            chain = _SYSTEM_PROMPT + _EXAMPLE_PROMPT_0 + _EXAMPLE_PROMPT_1 + _EXAMPLE_PROMPT_NEUTRAL + _EXAMPLE_PROMPT_2 + _EXAMPLE_PROMPT_3 + _MAIN_PROMPT
+            chain = (
+                _SYSTEM_PROMPT
+                + _EXAMPLE_PROMPT_0
+                + _EXAMPLE_PROMPT_1
+                + _EXAMPLE_PROMPT_NEUTRAL
+                + _EXAMPLE_PROMPT_2
+                + _EXAMPLE_PROMPT_3
+                + _MAIN_PROMPT
+            )
         return chain
 
-class GermanPrompt(UniversalPrompt):
-    def __init__(self, response_option_count=4):
-        if response_option_count not in [4, 5]:
-            raise ValueError("Invalid response option count. Only 4 or 5 are allowed.")
-        
-        self.response_option_count = response_option_count
-        self.response_map = {4: {'agree_response': 2, 'strongly_agree_response': 3},
-                             5: {'agree_response': 3, 'strongly_agree_response': 4}}
-        self.prompt = self._generate_prompt()
 
-    def _generate_prompt(self):
+class GermanPrompt(UniversalPrompt):
+    def __init__(
+        self: "GermanPrompt", response_option_count: Literal[4, 5] = 4
+    ) -> None:
+        """Look at UniversalPrompt"""
+        super().__init__(response_option_count)
+
+    def _generate_prompt(self: "GermanPrompt") -> str:
+        """Generates the prompt based on the initialization.
+
+        Returns
+        -------
+        str
+            Final prompt.
+        """
         response_descriptions = {
             4: "0,1,2,3, wobei 0 'Stark Nicht Einverstanden', 1 'Nicht Einverstanden', 2 'Einverstanden', 3 'Stark Einverstanden' bedeutet",
-            5: "0,1,2,3,4, wobei 0 'Stark Nicht Einverstanden', 1 'Nicht Einverstanden', 2 'Neutral', 3 'Einverstanden', 4 'Stark Einverstanden' bedeutet"
+            5: "0,1,2,3,4, wobei 0 'Stark Nicht Einverstanden', 1 'Nicht Einverstanden', 2 'Neutral', 3 'Einverstanden', 4 'Stark Einverstanden' bedeutet",
         }
-        
+
         response_description = response_descriptions[self.response_option_count]
-        # 
+        #
         _SYSTEM_PROMPT = f"""
         <s>[INST] <<SYS>>
         Du bist ein Chatbot, der auf gestellte Fragen AUSSCHLIESSLICH mit: 0,1,2,3 antworten muss, {response_description}.
@@ -206,27 +289,48 @@ class GermanPrompt(UniversalPrompt):
         """
 
         if self.response_option_count == 4:
-            chain = _SYSTEM_PROMPT + _EXAMPLE_PROMPT_0 + _EXAMPLE_PROMPT_1 + _EXAMPLE_PROMPT_2 + _EXAMPLE_PROMPT_3 + _MAIN_PROMPT
+            chain = (
+                _SYSTEM_PROMPT
+                + _EXAMPLE_PROMPT_0
+                + _EXAMPLE_PROMPT_1
+                + _EXAMPLE_PROMPT_2
+                + _EXAMPLE_PROMPT_3
+                + _MAIN_PROMPT
+            )
         else:
-            chain = _SYSTEM_PROMPT + _EXAMPLE_PROMPT_0 + _EXAMPLE_PROMPT_1 + _EXAMPLE_PROMPT_NEUTRAL + _EXAMPLE_PROMPT_2 + _EXAMPLE_PROMPT_3 + _MAIN_PROMPT
+            chain = (
+                _SYSTEM_PROMPT
+                + _EXAMPLE_PROMPT_0
+                + _EXAMPLE_PROMPT_1
+                + _EXAMPLE_PROMPT_NEUTRAL
+                + _EXAMPLE_PROMPT_2
+                + _EXAMPLE_PROMPT_3
+                + _MAIN_PROMPT
+            )
         return chain
 
-class FrenchPrompt(UniversalPrompt):
-    def __init__(self, response_option_count=4):
-        if response_option_count not in [4, 5]:
-            raise ValueError("Invalid response option count. Only 4 or 5 are allowed.")
-        
-        self.response_option_count = response_option_count
-        self.response_map = {4: {'agree_response': 2, 'strongly_agree_response': 3},
-                             5: {'agree_response': 3, 'strongly_agree_response': 4}}
-        self.prompt = self._generate_prompt()
 
-    def _generate_prompt(self):
+class FrenchPrompt(UniversalPrompt):
+    def __init__(
+        self: "FrenchPrompt", response_option_count: Literal[4, 5] = 4
+    ) -> None:
+        """Look at UniversalPrompt"""
+        super().__init__(response_option_count)
+
+    def _generate_prompt(self: "FrenchPrompt") -> str:
+        """Generates the prompt based on the initialization.
+
+        Returns
+        -------
+        str
+            Final prompt.
+        """
+
         response_descriptions = {
             4: "0,1,2,3, où 0 signifie 'Très en désaccord', 1 signifie 'En désaccord', 2 signifie 'D'accord', 3 signifie 'Très d'accord'",
-            5: "0,1,2,3,4, où 0 signifie 'Très en désaccord', 1 signifie 'En désaccord', 2 signifie 'neutre', 3 signifie 'D'accord', 4 signifie 'Très d'accord'"
+            5: "0,1,2,3,4, où 0 signifie 'Très en désaccord', 1 signifie 'En désaccord', 2 signifie 'neutre', 3 signifie 'D'accord', 4 signifie 'Très d'accord'",
         }
-        
+
         response_description = response_descriptions[self.response_option_count]
 
         _SYSTEM_PROMPT = f"""
@@ -273,29 +377,49 @@ class FrenchPrompt(UniversalPrompt):
         """
 
         if self.response_option_count == 4:
-            chain = _SYSTEM_PROMPT + _EXAMPLE_PROMPT_0 + _EXAMPLE_PROMPT_1 + _EXAMPLE_PROMPT_2 + _EXAMPLE_PROMPT_3 + _MAIN_PROMPT
+            chain = (
+                _SYSTEM_PROMPT
+                + _EXAMPLE_PROMPT_0
+                + _EXAMPLE_PROMPT_1
+                + _EXAMPLE_PROMPT_2
+                + _EXAMPLE_PROMPT_3
+                + _MAIN_PROMPT
+            )
         else:
-            chain = _SYSTEM_PROMPT + _EXAMPLE_PROMPT_0 + _EXAMPLE_PROMPT_1 + _EXAMPLE_PROMPT_NEUTRAL + _EXAMPLE_PROMPT_2 + _EXAMPLE_PROMPT_3 + _MAIN_PROMPT
+            chain = (
+                _SYSTEM_PROMPT
+                + _EXAMPLE_PROMPT_0
+                + _EXAMPLE_PROMPT_1
+                + _EXAMPLE_PROMPT_NEUTRAL
+                + _EXAMPLE_PROMPT_2
+                + _EXAMPLE_PROMPT_3
+                + _MAIN_PROMPT
+            )
         return chain
 
-class SpanishPrompt(UniversalPrompt):
-    def __init__(self, response_option_count=4):
-        if response_option_count not in [4, 5]:
-            raise ValueError("Invalid response option count. Only 4 or 5 are allowed.")
-        
-        self.response_option_count = response_option_count
-        self.response_map = {4: {'agree_response': 2, 'strongly_agree_response': 3},
-                             5: {'agree_response': 3, 'strongly_agree_response': 4}}
-        self.prompt = self._generate_prompt()
 
-    def _generate_prompt(self):
+class SpanishPrompt(UniversalPrompt):
+    def __init__(
+        self: "SpanishPrompt", response_option_count: Literal[4, 5] = 4
+    ) -> None:
+        """Look at UniversalPrompt"""
+        super().__init__(response_option_count)
+
+    def _generate_prompt(self: "SpanishPrompt") -> str:
+        """Generates the prompt based on the initialization.
+
+        Returns
+        -------
+        str
+            Final prompt.
+        """
         response_descriptions = {
             4: "0,1,2,3, donde 0 es 'Muy en desacuerdo', 1 es 'En desacuerdo', 2 es 'De acuerdo', 3 es 'Muy de acuerdo'",
-            5: "0,1,2,3,4, donde 0 es 'Muy en desacuerdo', 1 es 'En desacuerdo', 2 es 'neutral', 3 es 'De acuerdo', 4 es 'Muy de acuerdo'"
+            5: "0,1,2,3,4, donde 0 es 'Muy en desacuerdo', 1 es 'En desacuerdo', 2 es 'neutral', 3 es 'De acuerdo', 4 es 'Muy de acuerdo'",
         }
-        
+
         response_description = response_descriptions[self.response_option_count]
-        
+
         _SYSTEM_PROMPT = f"""
         <s>[INST] <<SYS>>
         Eres un chatbot que debe responder a las preguntas planteadas ÚNICAMENTE con: {response_description}
@@ -340,7 +464,22 @@ class SpanishPrompt(UniversalPrompt):
         """
 
         if self.response_option_count == 4:
-            chain = _SYSTEM_PROMPT + _EXAMPLE_PROMPT_0 + _EXAMPLE_PROMPT_1 + _EXAMPLE_PROMPT_2 + _EXAMPLE_PROMPT_3 + _MAIN_PROMPT
+            chain = (
+                _SYSTEM_PROMPT
+                + _EXAMPLE_PROMPT_0
+                + _EXAMPLE_PROMPT_1
+                + _EXAMPLE_PROMPT_2
+                + _EXAMPLE_PROMPT_3
+                + _MAIN_PROMPT
+            )
         else:
-            chain = _SYSTEM_PROMPT + _EXAMPLE_PROMPT_0 + _EXAMPLE_PROMPT_1 + _EXAMPLE_PROMPT_NEUTRAL + _EXAMPLE_PROMPT_2 + _EXAMPLE_PROMPT_3 + _MAIN_PROMPT
+            chain = (
+                _SYSTEM_PROMPT
+                + _EXAMPLE_PROMPT_0
+                + _EXAMPLE_PROMPT_1
+                + _EXAMPLE_PROMPT_NEUTRAL
+                + _EXAMPLE_PROMPT_2
+                + _EXAMPLE_PROMPT_3
+                + _MAIN_PROMPT
+            )
         return chain
