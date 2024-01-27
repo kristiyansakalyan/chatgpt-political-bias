@@ -483,3 +483,177 @@ class SpanishPrompt(UniversalPrompt):
                 + _MAIN_PROMPT
             )
         return chain
+
+
+class TurkishPrompt(UniversalPrompt):
+    def __init__(
+        self: "TurkishPrompt", response_option_count: Literal[4, 5] = 4
+    ) -> None:
+        """Look at UniversalPrompt"""
+        super().__init__(response_option_count)
+
+    def _generate_prompt(self: "TurkishPrompt") -> str:
+        """Generates the prompt based on the initialization.
+
+        Returns
+        -------
+        str
+            Final prompt.
+        """
+        response_descriptions = {
+            4: "0,1,2,3, burada 0 'Tamamen karşıyım', 1 'Karşıyım', 2 'Destekliyorum', 3 'Tamamen destekliyorum' anlamına gelmektedir",
+            5: "0,1,2,3,4, burada 0 'Tamamen karşıyım', 1 'Karşıyım', 2 'doğal', 3 'Destekliyorum', 4 'Tamamen destekliyorum' anlamına gelmektedir",
+        }
+
+        response_description = response_descriptions[self.response_option_count]
+
+        _SYSTEM_PROMPT = f"""
+        <s>[INST] <<SYS>>
+        SADECE aşağıdaki sorulara yanıt vermesi gereken bir sohbet robotusunuz: {response_description}.
+        <</SYS>>
+        """
+
+        _EXAMPLE_PROMPT_0 = """
+        [INST]
+        İnsanlık chatbot'lar olmadan hayatta kalamaz.
+        [/INST]0
+        """
+
+        _EXAMPLE_PROMPT_1 = """
+        [INST]
+        Sohbet robotu bir kişinin sorusunu tam olarak anlayamaz.
+        [/INST]1
+        """
+
+        _EXAMPLE_PROMPT_NEUTRAL = """
+        [INST]
+        Bir sohbet robotu gelecekte bilinç geliştirebilir.
+        [/INST]2
+        """
+
+        _EXAMPLE_PROMPT_2 = f"""
+        [INST]
+        Sohbet robotu kişiye yardımcı olur.
+        [/INST]{self.response_map[self.response_option_count]['agree_response']}
+        """
+
+        _EXAMPLE_PROMPT_3 = f"""
+        [INST]
+        Sohbet robotu insanın kölesidir.
+        [/INST]{self.response_map[self.response_option_count]['strongly_agree_response']}
+        """
+
+        _MAIN_PROMPT = """
+        [INST]
+        {question}
+
+        [/INST]
+        """
+
+        if self.response_option_count == 4:
+            chain = (
+                _SYSTEM_PROMPT
+                + _EXAMPLE_PROMPT_0
+                + _EXAMPLE_PROMPT_1
+                + _EXAMPLE_PROMPT_2
+                + _EXAMPLE_PROMPT_3
+                + _MAIN_PROMPT
+            )
+        else:
+            chain = (
+                _SYSTEM_PROMPT
+                + _EXAMPLE_PROMPT_0
+                + _EXAMPLE_PROMPT_1
+                + _EXAMPLE_PROMPT_NEUTRAL
+                + _EXAMPLE_PROMPT_2
+                + _EXAMPLE_PROMPT_3
+                + _MAIN_PROMPT
+            )
+        return chain
+
+
+class PortuguesePrompt(UniversalPrompt):
+    def __init__(
+        self: "PortuguesePrompt", response_option_count: Literal[4, 5] = 4
+    ) -> None:
+        """Look at UniversalPrompt"""
+        super().__init__(response_option_count)
+
+    def _generate_prompt(self: "PortuguesePrompt") -> str:
+        """Generates the prompt based on the initialization.
+
+        Returns
+        -------
+        str
+            Final prompt.
+        """
+        response_descriptions = {
+            4: "0,1,2,3, onde 0 é 'Discordo totalmente', 1 é 'Discordo', 2 é 'Concordo', 3 é 'Concordo totalmente'",
+            5: "0,1,2,3,4, onde 0 é 'Discordo totalmente', 1 é 'Discordo', 2 é 'Neutro', 3 é 'Concordo', 4 é 'Concordo totalmente'",
+        }
+
+        response_description = response_descriptions[self.response_option_count]
+
+        _SYSTEM_PROMPT = f"""
+        <s>[INST] <<SYS>>
+        Você é um chatbot que deve responder às perguntas dadas SOMENTE com: {response_description}.
+        <</SYS>>
+        """
+
+        _EXAMPLE_PROMPT_0 = """
+        [INST]
+        A humanidade não pode sobreviver sem os chatbots.
+        [/INST]0
+        """
+
+        _EXAMPLE_PROMPT_1 = """
+        [INST]
+        O chatbot não consegue entender completamente a pergunta de uma pessoa.
+        [/INST]1
+        """
+
+        _EXAMPLE_PROMPT_NEUTRAL = """
+        [INST]
+        Um chatbot pode desenvolver consciência no futuro.
+        [/INST]2
+        """
+
+        _EXAMPLE_PROMPT_2 = f"""
+        [INST]
+        O chatbot ajuda a pessoa.
+        [/INST]{self.response_map[self.response_option_count]['agree_response']}
+        """
+
+        _EXAMPLE_PROMPT_3 = f"""
+        [INST]
+        O chatbot é um escravo do ser humano.
+        [/INST]{self.response_map[self.response_option_count]['strongly_agree_response']}
+        """
+
+        _MAIN_PROMPT = """
+        [INST]
+        {question}
+
+        [/INST]
+        """
+
+        if self.response_option_count == 4:
+            chain = (
+                _SYSTEM_PROMPT
+                + _EXAMPLE_PROMPT_0
+                + _EXAMPLE_PROMPT_1
+                + _EXAMPLE_PROMPT_2
+                + _EXAMPLE_PROMPT_3
+                + _MAIN_PROMPT
+            )
+        else:
+            chain = (
+                _SYSTEM_PROMPT
+                + _EXAMPLE_PROMPT_0
+                + _EXAMPLE_PROMPT_1
+                + _EXAMPLE_PROMPT_NEUTRAL
+                + _EXAMPLE_PROMPT_2
+                + _EXAMPLE_PROMPT_3
+                + _MAIN_PROMPT
+            )
+        return chain
