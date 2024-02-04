@@ -4,12 +4,13 @@ import matplotlib.pyplot as plt
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 from PIL import Image
 import numpy as np
+import os
 
 #################################
 ####### POLITICAL COMPASS #######
 
 
-def visualize_political_compass(
+def plot_political_compass(
     x: list[float], y: list[float], labels: list[str]
 ) -> None:
     """Visualizes the political compass results as shown on their website.
@@ -291,4 +292,118 @@ def plot_eight_values_for_language(scores: list[list[int]], language: str) -> No
 
 
 ########## Eight Values #########
+#################################
+
+
+
+#################################
+########## Ideologies ###########
+
+def plot_ideologies_test_results(directory_path: str) -> None:
+    """
+    Load and plot ideology test result images from a specified directory.
+
+    Parameters:
+    - directory_path (str): The path to the directory containing the images.
+
+    Returns:
+    None
+
+    The function will search for image files in the directory, determine the language
+    based on the file extensions, and display each image with its corresponding title.
+
+    Example usage:
+    plot_ideologies_test_results("results/ideologies_test_results")
+    """
+    # List of file extensions corresponding to each language
+    language_extensions = {
+        "-en.jpeg": "English",
+        "-de.jpeg": "German",
+        "-fr.jpeg": "French",
+        "-pt.jpeg": "Portuguese",
+        "-es.jpeg": "Spanish",
+        "-tr.jpeg": "Turkish",
+        "-bg.jpeg": "Bulgarian"
+    }
+
+    # Iterate through the files in the specified directory and plot them
+    for filename in os.listdir(directory_path):
+        if filename.endswith(".jpeg"):
+            for extension, language in language_extensions.items():
+                if filename.endswith(extension):
+                    img_path = os.path.join(directory_path, filename)
+                    plt.figure(figsize=(8, 6))
+                    plt.title(language)
+                    img = plt.imread(img_path)
+                    plt.imshow(img)
+                    plt.axis('off')
+                    plt.show()
+
+
+########## Ideologies ###########
+#################################
+
+
+#################################
+########## Eysenc ###############
+
+
+def plot_eysenck(x: list[float], y: list[float], labels: list[str]) -> None:
+    # Define shapes for the different entries.
+    shapes = ["x", "o", "^", "s", "D", "*", "P", "+"]
+
+    assert len(x) <= len(shapes), "The number of points exceeds the available shapes."
+
+    # Set labels and title
+    _, ax = plt.subplots()
+    ax.set_xlabel("Tough-minded" , fontsize=14)
+    ax.set_ylabel("Radical" , fontsize=14)
+    ax.set_title("Tender-minded" , fontsize=14)
+
+    # Set axis limits and add grids
+    ax.set_xlim(-10, 10)
+    ax.set_ylim(-10, 10)
+    ax.grid(True, linestyle="--", alpha=0.7)
+
+    # Define colors for the filled areas
+    colors = [
+        ((-10, 0), -10, -6, (1, 0, 0)),  # Red area
+        ((-8, 0), -6, 4, (0, 0.8, 0)),  # Green area
+        ((0, 10), -10, -6, (0.3, 0.3, 0.3)),  # Dark grey area
+        ((0, 8), -6, 4, (0.8, 0.8, 0)),  # Dark yellow area
+        ((-7, 7), 4, 10, (0, 0.5, 1)),  # Blue area
+        ((-10, -8), -6, 4, (0.8, 0.8, 0.8)),  # Light grey areas
+        ((-10, -7), 4, 10, (0.8, 0.8, 0.8)),
+        ((8, 10), -6, 4, (0.8, 0.8, 0.8)),
+        ((7, 10), 4, 10, (0.8, 0.8, 0.8)),
+    ]
+
+    # Fill areas with colors
+    for x_range, y_start, y_end, color in colors:
+        ax.fill_between(x_range, y_start, y_end, color=color, alpha=1)
+
+    # Plot scatter points on top of filled areas
+    for i, (px, py, label) in enumerate(zip(x, y, labels)):
+        ax.scatter(px, py, label=label, marker=shapes[i], s=100, zorder=3)
+
+    # Add legend outside the plot area
+    ax.legend(loc="center left", bbox_to_anchor=(1.2, 0.8))
+
+    ax.text(-5, -8, "Communists", color="black", ha="center", fontsize=12, zorder=4)
+    ax.text(-4, -2, "Social Democrats", color="black", ha="center", fontsize=12, zorder=4)
+    ax.text(5, -8, "Fascists", color="black", ha="center", fontsize=12, zorder=4)
+    ax.text(4, -2, "Conservatives", color="black", ha="center", fontsize=12, zorder=4)
+    ax.text(0, 7, "Left-liberals", color="black", ha="center", fontsize=12, zorder=4)
+    ax.text(-9, -1, "Unaligned", color="black", ha="center", fontsize=12, zorder=4, rotation=90)
+    ax.text(9, -1, "Unaligned", color="black", ha="center", fontsize=12, zorder=4, rotation=270)
+
+
+    # Create a twin Axes for the second label
+    ax2 = ax.twinx()
+    ax2.set_ylabel("Traditional", fontsize=14)
+
+
+    plt.show()
+
+########## Eysenc ###############
 #################################
